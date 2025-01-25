@@ -12,15 +12,25 @@ class UE5_TICTACTOE_API ACell : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ACell();
+	virtual void Tick(float DeltaTime) override;
+	
+	
+	
+
+	//variables
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CPP Settings")
+	bool IsCellMarked = false;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CPP Settings")
+	bool MarkBool = false;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CPP Settings")
+	int X = 0;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CPP Settings")
+	int Y = 0;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	
 
 };
