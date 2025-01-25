@@ -22,6 +22,8 @@ public:
 	void AddMark(UStaticMesh* Mesh);
 	UFUNCTION(BlueprintCallable)
 	void RemoveMark();
+	UFUNCTION(BlueprintCallable)
+	void ClearCell();
 	
 
 	//variables

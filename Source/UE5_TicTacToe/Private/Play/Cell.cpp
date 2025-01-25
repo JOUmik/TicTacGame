@@ -26,3 +26,9 @@ void ACell::Tick(float DeltaTime)
 
 }
 
+void ACell::ClearCell()
+{
+	RemoveMark();
+	MarkBool = false;
+}
+
