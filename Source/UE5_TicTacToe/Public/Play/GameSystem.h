@@ -34,7 +34,11 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void PrepareGame();
-
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void HandleBackgroundColor();
+	UFUNCTION(BlueprintCallable)
+	void ClearAllCells();
+	
 	void SetUpCells();
 	void SetCellByIndex(const TObjectPtr<ACell>& Cell);
 	void SetCellTransform(const TObjectPtr<ACell>& Cell) const;

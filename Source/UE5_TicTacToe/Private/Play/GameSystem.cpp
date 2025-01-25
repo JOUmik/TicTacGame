@@ -1,6 +1,7 @@
 #include "Play/GameSystem.h"
 
 #include "Quaternion.h"
+#include "Kismet/GameplayStatics.h"
 #include "Play/Cell.h"
 
 
@@ -25,6 +26,18 @@ void AGameSystem::Tick(float DeltaTime)
 void AGameSystem::PrepareGame_Implementation()
 {
 	SetUpCells();
+
+	AudioSystem = Cast<AAudioSystem>(UGameplayStatics::GetActorOfClass(GetWorld(), AAudioSystem::StaticClass()));
+
+	HandleBackgroundColor();
+}
+
+void AGameSystem::ClearAllCells()
+{
+	for(auto Cell : Cells)
+	{
+		Cell->ClearCell();
+	}
 }
 
 void AGameSystem::SetUpCells()
