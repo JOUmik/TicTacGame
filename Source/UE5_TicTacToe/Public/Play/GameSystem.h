@@ -32,13 +32,25 @@ public:
 	AGameSystem();
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void MakeTurn(ACell* i_ClickedCell);
+	bool CheckForWin(int X, int Y);
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void PrepareGame();
+	UFUNCTION(BlueprintCallable)
+	void RestartGame();
+
+	void ResetGameData();
+	
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void HandleBackgroundColor();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ChangeWinCellsColor();
 	UFUNCTION(BlueprintCallable)
 	void ClearAllCells();
-	
+
+	ACell* GetCellByIndex(int X, int Y);
 	void SetUpCells();
 	void SetCellByIndex(const TObjectPtr<ACell>& Cell);
 	void SetCellTransform(const TObjectPtr<ACell>& Cell) const;
@@ -78,6 +90,11 @@ public:
 	TSubclassOf<ACell> CellClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CPP Settings")
 	TSubclassOf<AActor> LineClass;
+
+	UPROPERTY(EditAnywhere, Category="CPP Settings")
+	TObjectPtr<UStaticMesh> XMesh;
+	UPROPERTY(EditAnywhere, Category="CPP Settings")
+	TObjectPtr<UStaticMesh> OMesh;
 	
 	//Delegate
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "CPP Settings")

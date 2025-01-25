@@ -23,6 +23,153 @@ void AGameSystem::Tick(float DeltaTime)
 
 }
 
+void AGameSystem::MakeTurn(ACell* i_ClickedCell)
+{
+	ClickedCell = i_ClickedCell;
+	if (!IsGameEnd)
+	{
+		//Made by player(X)
+		if (Turn)
+		{
+			ClickedCell->AddMark(XMesh);
+			ClickedCell->MarkBool = true;
+		}
+		//Made by AI(O)
+		else
+		{
+			ClickedCell->AddMark(OMesh);
+			ClickedCell->MarkBool = false;
+		}
+
+		Turn = !Turn;
+		AvailableMoves--;
+		if (CheckForWin(ClickedCell->X, ClickedCell->Y))
+		{
+			IsGameEnd = true;
+			if (ClickedCell->MarkBool)
+			{
+				Winner = EMark::X;
+			}
+			else
+			{
+				Winner = EMark::O;
+			}
+		}
+
+		HandleBackgroundColor();
+		OnTurnChange.Broadcast();
+
+		if (IsGameEnd)
+		{
+			if (Winner == EMark::X)
+			{
+				WinCountX++;
+			}
+			else
+			{
+				WinCountO++;
+			}
+			ChangeWinCellsColor();
+			AudioSystem->PlayWin(Winner);
+			OnGameEnd.Broadcast();
+		}
+		else if (AvailableMoves == 0)
+		{
+			Winner = EMark::None;
+			IsGameEnd = true;
+			OnTurnChange.Broadcast();
+			AudioSystem->PlayWin(Winner);
+			OnGameEnd.Broadcast();
+		}
+	}
+}
+
+bool AGameSystem::CheckForWin(int X, int Y)
+{
+	//diagonal
+	if (X == Y)
+	{
+		ACell* A = GetCellByIndex(1, 1);
+		ACell* B = GetCellByIndex(2, 2);
+		ACell* C = GetCellByIndex(3, 3);
+		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		{
+			if (A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+			{
+				WinCells.Add(A);
+				WinCells.Add(B);
+				WinCells.Add(C);
+				return true;
+			}
+		}
+	}
+	//anti diagonal
+	if (X + Y == 4)
+	{
+		ACell* A = GetCellByIndex(1, 3);
+		ACell* B = GetCellByIndex(2, 2);
+		ACell* C = GetCellByIndex(3, 1);
+		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		{
+			if (A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+			{
+				WinCells.Add(A);
+				WinCells.Add(B);
+				WinCells.Add(C);
+				return true;
+			}
+		}
+	}
+	//X axis
+	ACell* A = GetCellByIndex(1, Y);
+	ACell* B = GetCellByIndex(2, Y);
+	ACell* C = GetCellByIndex(3, Y);
+	if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+	{
+		if (A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+		{
+			WinCells.Add(A);
+			WinCells.Add(B);
+			WinCells.Add(C);
+			return true;
+		}
+	}
+	//Y axis
+	A = GetCellByIndex(X, 1);
+	B = GetCellByIndex(X, 2);
+	C = GetCellByIndex(X, 3);
+	if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+	{
+		if (A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+		{
+			WinCells.Add(A);
+			WinCells.Add(B);
+			WinCells.Add(C);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void AGameSystem::RestartGame()
+{
+	ClearAllCells();
+	ResetGameData();
+	AudioSystem->StopWin();
+}
+
+void AGameSystem::ResetGameData()
+{
+	IsGameEnd = false;
+	Winner = EMark::None;
+	Turn = true;
+	OnTurnChange.Broadcast();
+	AvailableMoves = Cells.Num();
+	WinCells.Empty();
+	HandleBackgroundColor();
+}
+
 void AGameSystem::PrepareGame_Implementation()
 {
 	SetUpCells();
@@ -38,6 +185,11 @@ void AGameSystem::ClearAllCells()
 	{
 		Cell->ClearCell();
 	}
+}
+
+ACell* AGameSystem::GetCellByIndex(int X, int Y)
+{
+	return Cells[(X-1)*N+(Y-1)];
 }
 
 void AGameSystem::SetUpCells()
