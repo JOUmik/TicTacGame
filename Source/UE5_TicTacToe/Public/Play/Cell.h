@@ -38,7 +38,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CPP Settings")
 	TObjectPtr<AGameSystem> GameSystem;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "CPP Settings")
-	TObjectPtr<UStaticMeshComponent> StaticMesh;
+	TObjectPtr<UStaticMeshComponent> Mark;
 
 protected:
 	virtual void BeginPlay() override;
@@ -49,11 +49,11 @@ protected:
 
 inline void ACell::AddMark(UStaticMesh* Mesh)
 {
-	StaticMesh = NewObject<UStaticMeshComponent>(this);
-	StaticMesh->SetStaticMesh(Mesh);
+	Mark = NewObject<UStaticMeshComponent>(this);
+	Mark->SetStaticMesh(Mesh);
 
-	StaticMesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-	StaticMesh->RegisterComponent();
+	Mark->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	Mark->RegisterComponent();
 
 	IsCellMarked = true;
 	if (AudioSystem)
@@ -64,10 +64,10 @@ inline void ACell::AddMark(UStaticMesh* Mesh)
 
 inline void ACell::RemoveMark()
 {
-	if (StaticMesh)
+	if (Mark)
 	{
-		StaticMesh->DestroyComponent();
-		StaticMesh = nullptr;
+		Mark->DestroyComponent();
+		Mark = nullptr;
 		IsCellMarked = false;
 	}
 }
