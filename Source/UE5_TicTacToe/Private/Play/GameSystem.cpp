@@ -8,13 +8,14 @@
 AGameSystem::AGameSystem()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	Cells.SetNum(9);
 }
 
 void AGameSystem::BeginPlay()
 {
 	Super::BeginPlay();
-	Cells.SetNum(9);
+	
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Cells Length: %i"), Cells.Num()));
 }
 
 void AGameSystem::Tick(float DeltaTime)
@@ -96,7 +97,7 @@ bool AGameSystem::CheckForWin(int X, int Y)
 		ACell* A = GetCellByIndex(1, 1);
 		ACell* B = GetCellByIndex(2, 2);
 		ACell* C = GetCellByIndex(3, 3);
-		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 		{
 			if (A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 			{
@@ -113,7 +114,7 @@ bool AGameSystem::CheckForWin(int X, int Y)
 		ACell* A = GetCellByIndex(1, 3);
 		ACell* B = GetCellByIndex(2, 2);
 		ACell* C = GetCellByIndex(3, 1);
-		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 		{
 			if (A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 			{
@@ -128,7 +129,7 @@ bool AGameSystem::CheckForWin(int X, int Y)
 	ACell* A = GetCellByIndex(1, Y);
 	ACell* B = GetCellByIndex(2, Y);
 	ACell* C = GetCellByIndex(3, Y);
-	if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+	if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 	{
 		if (A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 		{
@@ -142,7 +143,7 @@ bool AGameSystem::CheckForWin(int X, int Y)
 	A = GetCellByIndex(X, 1);
 	B = GetCellByIndex(X, 2);
 	C = GetCellByIndex(X, 3);
-	if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+	if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 	{
 		if (A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 		{
@@ -162,6 +163,7 @@ void AGameSystem::AITurn()
 	
 	if (BestMove.X != -1 && BestMove.Y != -1)
 	{
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("make turn")));
 		MakeTurn(GetCellByIndex(BestMove.X, BestMove.Y));
 	}
 }
@@ -261,7 +263,7 @@ bool AGameSystem::CheckWinForMiniMax(EMark Mark)
 			ACell* A = GetCellByIndex(i, 1);
 			ACell* B = GetCellByIndex(i, 2);
 			ACell* C = GetCellByIndex(i, 3);
-			if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+			if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 			{
 				if (A->MarkBool == true && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 				{
@@ -274,7 +276,7 @@ bool AGameSystem::CheckWinForMiniMax(EMark Mark)
 			ACell* A = GetCellByIndex(1, i);
 			ACell* B = GetCellByIndex(2, i);
 			ACell* C = GetCellByIndex(3, i);
-			if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+			if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 			{
 				if (A->MarkBool == true && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 				{
@@ -285,7 +287,7 @@ bool AGameSystem::CheckWinForMiniMax(EMark Mark)
 		ACell* A = GetCellByIndex(1, 1);
 		ACell* B = GetCellByIndex(2, 2);
 		ACell* C = GetCellByIndex(3, 3);
-		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 		{
 			if (A->MarkBool == true && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 			{
@@ -296,7 +298,7 @@ bool AGameSystem::CheckWinForMiniMax(EMark Mark)
 		A = GetCellByIndex(1, 3);
 		B = GetCellByIndex(2, 2);
 		C = GetCellByIndex(3, 1);
-		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 		{
 			if (A->MarkBool == true && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 			{
@@ -314,7 +316,7 @@ bool AGameSystem::CheckWinForMiniMax(EMark Mark)
 			ACell* A = GetCellByIndex(i, 1);
 			ACell* B = GetCellByIndex(i, 2);
 			ACell* C = GetCellByIndex(i, 3);
-			if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+			if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 			{
 				if (A->MarkBool == false && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 				{
@@ -327,7 +329,7 @@ bool AGameSystem::CheckWinForMiniMax(EMark Mark)
 			ACell* A = GetCellByIndex(1, i);
 			ACell* B = GetCellByIndex(2, i);
 			ACell* C = GetCellByIndex(3, i);
-			if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+			if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 			{
 				if (A->MarkBool == false && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 				{
@@ -338,7 +340,7 @@ bool AGameSystem::CheckWinForMiniMax(EMark Mark)
 		ACell* A = GetCellByIndex(1, 1);
 		ACell* B = GetCellByIndex(2, 2);
 		ACell* C = GetCellByIndex(3, 3);
-		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 		{
 			if (A->MarkBool == false && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 			{
@@ -349,7 +351,7 @@ bool AGameSystem::CheckWinForMiniMax(EMark Mark)
 		A = GetCellByIndex(1, 3);
 		B = GetCellByIndex(2, 2);
 		C = GetCellByIndex(3, 1);
-		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		if (A && B && C && A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
 		{
 			if (A->MarkBool == false && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
 			{
@@ -365,7 +367,7 @@ bool AGameSystem::IsDraw()
 {
 	for (auto Cell:Cells)
 	{
-		if (!Cell->IsCellMarked)
+		if (Cell && !Cell->IsCellMarked)
 		{
 			return false;
 		}
@@ -419,7 +421,13 @@ bool AGameSystem::IsCellEmpty(int X, int Y)
 
 ACell* AGameSystem::GetCellByIndex(int X, int Y)
 {
-	return Cells[(X-1)*N+(Y-1)];
+	int index = (X-1)*N+(Y-1);
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("X: %i, Y: %i, Index: %i"), X, Y, index));
+	if (index>=0 && index<Cells.Num())
+	{
+		return Cells[index];
+	}
+	return nullptr;
 }
 
 void AGameSystem::SetUpCells()
@@ -441,7 +449,11 @@ void AGameSystem::SetUpCells()
 
 void AGameSystem::SetCellByIndex(const TObjectPtr<ACell>& Cell)
 {
-	Cells[(Cell->X-1)*N+(Cell->Y-1)] = Cell;
+	int index = (Cell->X-1)*N+(Cell->Y-1);
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("%i"), index));
+	
+	Cells[index] = Cell;
+	
 }
 
 void AGameSystem::SetCellTransform(const TObjectPtr<ACell>& Cell) const

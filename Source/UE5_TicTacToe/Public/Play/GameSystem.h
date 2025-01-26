@@ -79,11 +79,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CPP Settings")
 	bool Turn = true;  //Turn = true: player, Turn = false: AI
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CPP Settings")
-	TArray<TObjectPtr<ACell>> Cells;
+	TArray<ACell*> Cells;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CPP Settings")
-	TObjectPtr<ACell> ClickedCell;
+	ACell* ClickedCell;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CPP Settings")
-	TArray<TObjectPtr<ACell>> WinCells;
+	TArray<ACell*> WinCells;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CPP Settings")
 	bool IsGameEnd = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CPP Settings")
