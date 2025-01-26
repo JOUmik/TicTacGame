@@ -4,6 +4,7 @@
 #include "Command/CommandManager.h"
 
 #include "Command/ICommand.h"
+#include "Play/GameSystem.h"
 
 void CommandManager::ExecuteCommand(TSharedPtr<ICommand> Command)
 {
@@ -31,6 +32,11 @@ void CommandManager::Undo()
 		Command->Undo();
 		RedoStack.push(Command);
 	}
+	GameSystem->EnableRedo.Broadcast();
+	if (UndoStack.empty())
+	{
+		GameSystem->DisableUndo.Broadcast();
+	}
 }
 
 void CommandManager::Redo()
@@ -48,6 +54,11 @@ void CommandManager::Redo()
 		RedoStack.pop();
 		Command->Redo();
 		UndoStack.push(Command);
+	}
+	GameSystem->EnableUndo.Broadcast();
+	if (RedoStack.empty())
+	{
+		GameSystem->DisableRedo.Broadcast();
 	}
 }
 

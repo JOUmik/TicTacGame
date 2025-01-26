@@ -123,6 +123,14 @@ public:
 	FOnStateChanged OnGameEnd;
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "CPP Settings")
 	FOnStateChanged OnTurnChange;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "CPP Settings")
+	FOnStateChanged EnableUndo;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "CPP Settings")
+	FOnStateChanged EnableRedo;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "CPP Settings")
+	FOnStateChanged DisableUndo;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "CPP Settings")
+	FOnStateChanged DisableRedo;
 
 	//undo/redo
 	UFUNCTION(BlueprintCallable)
@@ -131,7 +139,7 @@ public:
 	void ReplaceMarker(int X, int Y, EMark Mark);
 	UFUNCTION(BlueprintCallable)
 	void RedoMove();
-	TObjectPtr<CommandManager> CommandMgr;
+	CommandManager* CommandMgr;
 	
 protected:
 	virtual void BeginPlay() override;

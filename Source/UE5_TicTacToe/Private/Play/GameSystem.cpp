@@ -17,7 +17,7 @@ void AGameSystem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CommandMgr = new CommandManager();
+	CommandMgr = new CommandManager(this);
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Cells Length: %i"), Cells.Num()));
 }
@@ -53,6 +53,7 @@ void AGameSystem::MakeTurn(ACell* i_ClickedCell)
 			//Add info to command manager to make undo/redo function
 			TSharedPtr<PlaceMarkerCommand> Command = MakeShared<PlaceMarkerCommand>(this, ClickedCell->X, ClickedCell->Y, EMark::O);
 			CommandMgr->ExecuteCommand(Command);
+			EnableUndo.Broadcast();
 		}
 
 		Turn = !Turn;
