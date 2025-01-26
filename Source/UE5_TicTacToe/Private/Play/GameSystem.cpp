@@ -1,6 +1,8 @@
 #include "Play/GameSystem.h"
 
 #include "Quaternion.h"
+#include "Command/CommandManager.h"
+#include "Command/PlaceMarkerCommand.h"
 #include "Kismet/GameplayStatics.h"
 #include "Play/Cell.h"
 
@@ -14,6 +16,8 @@ AGameSystem::AGameSystem()
 void AGameSystem::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CommandMgr = new CommandManager();
 	
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Cells Length: %i"), Cells.Num()));
 }
@@ -27,6 +31,7 @@ void AGameSystem::Tick(float DeltaTime)
 void AGameSystem::MakeTurn(ACell* i_ClickedCell)
 {
 	ClickedCell = i_ClickedCell;
+	
 	if (!IsGameEnd)
 	{
 		//Made by player(X)
@@ -34,12 +39,20 @@ void AGameSystem::MakeTurn(ACell* i_ClickedCell)
 		{
 			ClickedCell->AddMark(XMesh);
 			ClickedCell->MarkBool = true;
+
+			//Add info to command manager to make undo/redo function
+			TSharedPtr<PlaceMarkerCommand> Command = MakeShared<PlaceMarkerCommand>(this, ClickedCell->X, ClickedCell->Y, EMark::X);
+			CommandMgr->ExecuteCommand(Command);
 		}
 		//Made by AI(O)
 		else
 		{
 			ClickedCell->AddMark(OMesh);
 			ClickedCell->MarkBool = false;
+
+			//Add info to command manager to make undo/redo function
+			TSharedPtr<PlaceMarkerCommand> Command = MakeShared<PlaceMarkerCommand>(this, ClickedCell->X, ClickedCell->Y, EMark::O);
+			CommandMgr->ExecuteCommand(Command);
 		}
 
 		Turn = !Turn;
@@ -88,6 +101,37 @@ void AGameSystem::MakeTurn(ACell* i_ClickedCell)
 		}
 	}
 }
+
+void AGameSystem::UndoMove()
+{
+	if (!Turn) return;
+
+	CommandMgr->Undo();
+}
+
+void AGameSystem::ReplaceMarker(int X, int Y, EMark Mark)
+{
+	ACell* A = GetCellByIndex(X, Y);
+	A->IsCellMarked = true;
+	if (Mark == EMark::O)
+	{
+		A->MarkBool = false;
+		A->AddMark(OMesh);
+	}
+	else
+	{
+		A->MarkBool = true;
+		A->AddMark(XMesh);
+	}
+}
+
+void AGameSystem::RedoMove()
+{
+	if (!Turn) return;
+
+	CommandMgr->Redo();
+}
+
 
 bool AGameSystem::CheckForWin(int X, int Y)
 {
@@ -251,6 +295,7 @@ void AGameSystem::RemoveMarker(int X, int Y)
 	ACell* A = GetCellByIndex(X, Y);
 	A->IsCellMarked = false;
 	A->MarkBool = false;
+	A->ClearCell();
 }
 
 bool AGameSystem::CheckWinForMiniMax(EMark Mark)

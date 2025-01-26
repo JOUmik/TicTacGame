@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "GameSystem.generated.h"
 
+class CommandManager;
 class ACell;
 class AAudioSystem;
 
@@ -122,6 +123,15 @@ public:
 	FOnStateChanged OnGameEnd;
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "CPP Settings")
 	FOnStateChanged OnTurnChange;
+
+	//undo/redo
+	UFUNCTION(BlueprintCallable)
+	void UndoMove();
+
+	void ReplaceMarker(int X, int Y, EMark Mark);
+	UFUNCTION(BlueprintCallable)
+	void RedoMove();
+	TObjectPtr<CommandManager> CommandMgr;
 	
 protected:
 	virtual void BeginPlay() override;
