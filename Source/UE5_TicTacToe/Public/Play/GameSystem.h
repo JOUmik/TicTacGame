@@ -20,6 +20,14 @@ enum class ELine : uint8
 	Top = 1
 };
 
+//For AI
+struct AIMove
+{
+	int X;
+	int Y;
+	int Score;
+};
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStateChanged);
 
@@ -35,6 +43,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void MakeTurn(ACell* i_ClickedCell);
 	bool CheckForWin(int X, int Y);
+
+	void AITurn();
+	AIMove MiniMaxAlgorithm(int Depth, bool bIsMaximizing);
+
+	void PlaceMarker(int X, int Y, EMark Mark);
+	void RemoveMarker(int X, int Y);
+	bool CheckWinForMiniMax(EMark Mark);
+	bool IsDraw();
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void PrepareGame();
@@ -49,6 +65,7 @@ public:
 	void ChangeWinCellsColor();
 	UFUNCTION(BlueprintCallable)
 	void ClearAllCells();
+	bool IsCellEmpty(int X, int Y);
 
 	ACell* GetCellByIndex(int X, int Y);
 	void SetUpCells();
@@ -110,5 +127,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	
-
+private:
+	FTimerHandle AITimeHandle;
 };

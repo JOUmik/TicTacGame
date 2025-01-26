@@ -81,6 +81,10 @@ void AGameSystem::MakeTurn(ACell* i_ClickedCell)
 			AudioSystem->PlayWin(Winner);
 			OnGameEnd.Broadcast();
 		}
+		else if (!Turn)
+		{
+			GetWorldTimerManager().SetTimer(AITimeHandle, this, &AGameSystem::AITurn, FMath::RandRange(0.6f, 1.5f));
+		}
 	}
 }
 
@@ -152,6 +156,223 @@ bool AGameSystem::CheckForWin(int X, int Y)
 	return false;
 }
 
+void AGameSystem::AITurn()
+{
+	AIMove BestMove = MiniMaxAlgorithm(0, true);
+	
+	if (BestMove.X != -1 && BestMove.Y != -1)
+	{
+		MakeTurn(GetCellByIndex(BestMove.X, BestMove.Y));
+	}
+}
+
+AIMove AGameSystem::MiniMaxAlgorithm(int Depth, bool bIsMaximizing)
+{
+	if (Depth >= 4)
+	{
+		return { -1, -1, 0 };
+	}
+	
+	// detect termination conditions
+	if (CheckWinForMiniMax(EMark::O))
+	{
+		return { -1, -1, 10 - Depth };
+	}
+	if (CheckWinForMiniMax(EMark::X))
+	{
+		return { -1, -1, Depth - 10 };
+	}
+	if (IsDraw())
+	{
+		return { -1, -1, 0 };
+	}
+
+	// Minimax Logic
+	AIMove BestMove = { -1, -1, bIsMaximizing ? -1000 : 1000 };
+
+	for (int x = 1; x <= M; ++x)
+	{
+		for (int y = 1; y <= N; ++y)
+		{
+			if (IsCellEmpty(x, y))
+			{
+				// simulate chessing
+				PlaceMarker(x, y, bIsMaximizing ? EMark::O : EMark::X);
+
+				// 递归计算得分
+				AIMove SimulatedMove = MiniMaxAlgorithm(Depth + 1, !bIsMaximizing);
+
+				// 撤销下棋
+				RemoveMarker(x, y);
+
+				// update best score
+				SimulatedMove.X = x;
+				SimulatedMove.Y = y;
+
+				if (bIsMaximizing)
+				{
+					if (SimulatedMove.Score > BestMove.Score)
+					{
+						BestMove = SimulatedMove;
+					}
+				}
+				else
+				{
+					if (SimulatedMove.Score < BestMove.Score)
+					{
+						BestMove = SimulatedMove;
+					}
+				}
+			}
+		}
+	}
+
+	return BestMove;
+}
+
+void AGameSystem::PlaceMarker(int X, int Y, EMark Mark)
+{
+	ACell* A = GetCellByIndex(X, Y);
+	A->IsCellMarked = true;
+	if (Mark == EMark::O)
+	{
+		A->MarkBool = false;
+	}
+	else
+	{
+		A->MarkBool = true;
+	}
+}
+
+void AGameSystem::RemoveMarker(int X, int Y)
+{
+	ACell* A = GetCellByIndex(X, Y);
+	A->IsCellMarked = false;
+	A->MarkBool = false;
+}
+
+bool AGameSystem::CheckWinForMiniMax(EMark Mark)
+{
+	//Player
+	if (Mark == EMark::X)
+	{
+		for (int i = 1; i<=M; i++)
+		{
+			ACell* A = GetCellByIndex(i, 1);
+			ACell* B = GetCellByIndex(i, 2);
+			ACell* C = GetCellByIndex(i, 3);
+			if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+			{
+				if (A->MarkBool == true && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+				{
+					return true;
+				}
+			}
+		}
+		for (int i = 1; i<=N; i++)
+		{
+			ACell* A = GetCellByIndex(1, i);
+			ACell* B = GetCellByIndex(2, i);
+			ACell* C = GetCellByIndex(3, i);
+			if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+			{
+				if (A->MarkBool == true && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+				{
+					return true;
+				}
+			}
+		}
+		ACell* A = GetCellByIndex(1, 1);
+		ACell* B = GetCellByIndex(2, 2);
+		ACell* C = GetCellByIndex(3, 3);
+		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		{
+			if (A->MarkBool == true && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+			{
+				return true;
+			}
+		}
+
+		A = GetCellByIndex(1, 3);
+		B = GetCellByIndex(2, 2);
+		C = GetCellByIndex(3, 1);
+		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		{
+			if (A->MarkBool == true && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+	//AI
+	else
+	{
+		for (int i = 1; i<=M; i++)
+		{
+			ACell* A = GetCellByIndex(i, 1);
+			ACell* B = GetCellByIndex(i, 2);
+			ACell* C = GetCellByIndex(i, 3);
+			if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+			{
+				if (A->MarkBool == false && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+				{
+					return true;
+				}
+			}
+		}
+		for (int i = 1; i<=N; i++)
+		{
+			ACell* A = GetCellByIndex(1, i);
+			ACell* B = GetCellByIndex(2, i);
+			ACell* C = GetCellByIndex(3, i);
+			if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+			{
+				if (A->MarkBool == false && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+				{
+					return true;
+				}
+			}
+		}
+		ACell* A = GetCellByIndex(1, 1);
+		ACell* B = GetCellByIndex(2, 2);
+		ACell* C = GetCellByIndex(3, 3);
+		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		{
+			if (A->MarkBool == false && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+			{
+				return true;
+			}
+		}
+
+		A = GetCellByIndex(1, 3);
+		B = GetCellByIndex(2, 2);
+		C = GetCellByIndex(3, 1);
+		if (A->IsCellMarked && B->IsCellMarked && C->IsCellMarked)
+		{
+			if (A->MarkBool == false && A->MarkBool == B->MarkBool && B->MarkBool == C->MarkBool)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+}
+
+bool AGameSystem::IsDraw()
+{
+	for (auto Cell:Cells)
+	{
+		if (!Cell->IsCellMarked)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 void AGameSystem::RestartGame()
 {
 	ClearAllCells();
@@ -185,6 +406,15 @@ void AGameSystem::ClearAllCells()
 	{
 		Cell->ClearCell();
 	}
+}
+
+bool AGameSystem::IsCellEmpty(int X, int Y)
+{
+	if (!GetCellByIndex(X, Y)->IsCellMarked)
+	{
+		return true;
+	}
+	return false;
 }
 
 ACell* AGameSystem::GetCellByIndex(int X, int Y)
